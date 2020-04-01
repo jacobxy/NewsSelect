@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"errors"
 )
 
 const (
@@ -61,12 +62,13 @@ type NewsSummaryResponse struct {
 
 func AskNewsSummary(title, content string) string {
 
-	content = strings.Replace(content, " ", "", -1)	
+	content = strings.Replace(content, " ", "", -1)
+	fmt.Println(len(content))
 
 	temp := NewsSummaryPostRequest{
-		Title:          title,
-		Content:        content,
-		MaxSummaryLen: 200,
+		Title:         title,
+		Content:       content,
+		MaxSummaryLen: len(content)/10,
 	}
 
 	b, _ := json.Marshal(temp)
@@ -93,6 +95,10 @@ func AskNewsSummary(title, content string) string {
 	if err != nil {
 		panic(err)
 	}
+	if resTemp.Summary == ""{
+		fmt.Println(content)
+		panic(errors.New("error"))
+	}
 
 	fmt.Println(resTemp)
 	fmt.Println(string(r))
@@ -100,6 +106,7 @@ func AskNewsSummary(title, content string) string {
 	return resTemp.Summary
 }
 
+/*
 func main() {
 	title := "第二语言习得的领域关系"
 	content := `有许多领域与第二语言习得有关，有些在第一章中已经提过。本章将简要提及几个“相邻”学科并向读者介绍这些领域，指出它们相同和不同之处。虽然 二语习得已是一个自足的研究领域，但它的根扎在其他领域，如语言教学领域, 也是在其他领域最早证明自身存在的价值，并且一直受到诸如语言学和心理学 等其他领域的影响。但是，它与儿童语言习得(child language acquisition)有一 种特殊的关系，原因在于儿童语言习得构成了第二语言习得研究的基础，第二语 言习得研究的许多原始问题都源于儿童语言习得研究中的相同问题。还有一些 领域，如第三语言习得(third language acquisition )或继承语习得(heritage language acquisition),是第二语言习得的特例，近年来也得到了发展，特别是继 承语学习。最后，双语习得(bilingual acquisition)融合了有关第二语言习得和第 一语言习得的问题。
@@ -109,4 +116,5 @@ func main() {
 	r := (AskNewsSummary(title, content))
 	fmt.Println(r)
 }
+*/
 
